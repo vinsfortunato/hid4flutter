@@ -17,7 +17,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
-  final _hid4flutterPlugin = Hid4Flutter();
+  final _hid4flutterPlugin = Hid();
 
   @override
   void initState() {
@@ -31,11 +31,14 @@ class _MyAppState extends State<MyApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      platformVersion = await _hid4flutterPlugin.getPlatformVersion() ??
-          'Unknown platform version';
+      platformVersion = 'Unknown platform version';
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
+
+    List<HidDevice> devices = await Hid().getAttachedDevices();
+
+    print(devices);
 
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling

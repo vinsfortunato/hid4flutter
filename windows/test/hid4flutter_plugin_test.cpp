@@ -22,8 +22,8 @@ using flutter::MethodResultFunctions;
 
 }  // namespace
 
-TEST(Hid4FlutterPlugin, GetPlatformVersion) {
-  Hid4FlutterPlugin plugin;
+TEST(Hid4flutterPlugin, GetPlatformVersion) {
+  Hid4flutterPlugin plugin;
   // Save the reply value from the success callback.
   std::string result_string;
   plugin.HandleMethodCall(

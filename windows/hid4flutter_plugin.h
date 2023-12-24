@@ -8,17 +8,17 @@
 
 namespace hid4flutter {
 
-class Hid4FlutterPlugin : public flutter::Plugin {
+class Hid4flutterPlugin : public flutter::Plugin {
  public:
   static void RegisterWithRegistrar(flutter::PluginRegistrarWindows *registrar);
 
-  Hid4FlutterPlugin();
+  Hid4flutterPlugin();
 
-  virtual ~Hid4FlutterPlugin();
+  virtual ~Hid4flutterPlugin();
 
   // Disallow copy and assign.
-  Hid4FlutterPlugin(const Hid4FlutterPlugin&) = delete;
-  Hid4FlutterPlugin& operator=(const Hid4FlutterPlugin&) = delete;
+  Hid4flutterPlugin(const Hid4flutterPlugin&) = delete;
+  Hid4flutterPlugin& operator=(const Hid4flutterPlugin&) = delete;
 
   // Called when a method is called on this plugin's channel from Dart.
   void HandleMethodCall(

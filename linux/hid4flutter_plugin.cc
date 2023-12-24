@@ -10,17 +10,17 @@
 
 #define HID4FLUTTER_PLUGIN(obj) \
   (G_TYPE_CHECK_INSTANCE_CAST((obj), hid4flutter_plugin_get_type(), \
-                              Hid4FlutterPlugin))
+                              Hid4flutterPlugin))
 
-struct _Hid4FlutterPlugin {
+struct _Hid4flutterPlugin {
   GObject parent_instance;
 };
 
-G_DEFINE_TYPE(Hid4FlutterPlugin, hid4flutter_plugin, g_object_get_type())
+G_DEFINE_TYPE(Hid4flutterPlugin, hid4flutter_plugin, g_object_get_type())
 
 // Called when a method call is received from Flutter.
 static void hid4flutter_plugin_handle_method_call(
-    Hid4FlutterPlugin* self,
+    Hid4flutterPlugin* self,
     FlMethodCall* method_call) {
   g_autoptr(FlMethodResponse) response = nullptr;
 
@@ -47,20 +47,20 @@ static void hid4flutter_plugin_dispose(GObject* object) {
   G_OBJECT_CLASS(hid4flutter_plugin_parent_class)->dispose(object);
 }
 
-static void hid4flutter_plugin_class_init(Hid4FlutterPluginClass* klass) {
+static void hid4flutter_plugin_class_init(Hid4flutterPluginClass* klass) {
   G_OBJECT_CLASS(klass)->dispose = hid4flutter_plugin_dispose;
 }
 
-static void hid4flutter_plugin_init(Hid4FlutterPlugin* self) {}
+static void hid4flutter_plugin_init(Hid4flutterPlugin* self) {}
 
 static void method_call_cb(FlMethodChannel* channel, FlMethodCall* method_call,
                            gpointer user_data) {
-  Hid4FlutterPlugin* plugin = HID4FLUTTER_PLUGIN(user_data);
+  Hid4flutterPlugin* plugin = HID4FLUTTER_PLUGIN(user_data);
   hid4flutter_plugin_handle_method_call(plugin, method_call);
 }
 
 void hid4flutter_plugin_register_with_registrar(FlPluginRegistrar* registrar) {
-  Hid4FlutterPlugin* plugin = HID4FLUTTER_PLUGIN(
+  Hid4flutterPlugin* plugin = HID4FLUTTER_PLUGIN(
       g_object_new(hid4flutter_plugin_get_type(), nullptr));
 
   g_autoptr(FlStandardMethodCodec) codec = fl_standard_method_codec_new();

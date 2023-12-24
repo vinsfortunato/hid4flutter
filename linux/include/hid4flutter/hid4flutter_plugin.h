@@ -11,10 +11,10 @@ G_BEGIN_DECLS
 #define FLUTTER_PLUGIN_EXPORT
 #endif
 
-typedef struct _Hid4FlutterPlugin Hid4FlutterPlugin;
+typedef struct _Hid4flutterPlugin Hid4flutterPlugin;
 typedef struct {
   GObjectClass parent_class;
-} Hid4FlutterPluginClass;
+} Hid4flutterPluginClass;
 
 FLUTTER_PLUGIN_EXPORT GType hid4flutter_plugin_get_type();
 

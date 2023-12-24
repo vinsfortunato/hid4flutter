@@ -9,6 +9,7 @@ environment:
   flutter: '>=3.3.0'
 
 dependencies:
+  ffi: ^2.1.0
   flutter:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
@@ -37,16 +38,16 @@ flutter:
     platforms:
       android:
         package: com.github.vinsfortunato.hid4flutter
-        pluginClass: Hid4FlutterPlugin
+        pluginClass: Hid4flutterPlugin
         dartPluginClass: HidAndroid
       linux:
-        pluginClass: Hid4FlutterPlugin
+        pluginClass: Hid4flutterPlugin
         dartPluginClass: HidLinux
       macos:
-        pluginClass: Hid4FlutterPlugin
+        pluginClass: Hid4flutterPlugin
         dartPluginClass: HidMacos
       windows:
-        pluginClass: Hid4FlutterPluginCApi
+        pluginClass: Hid4flutterPluginCApi
         dartPluginClass: HidWindows
 
   # To add assets to your plugin package, add an assets section, like this:
