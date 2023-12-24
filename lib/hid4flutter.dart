@@ -7,15 +7,15 @@ export 'src/android/hid_android.dart';
 export 'src/desktop/hid_desktop.dart';
 
 class Hid {
-  Future<void> init() {
+  static Future<void> init() {
     return HidPlatform.instance.init();
   }
 
-  Future<void> exit() {
+  static Future<void> exit() {
     return HidPlatform.instance.exit();
   }
 
-  Future<List<HidDevice>> getAttachedDevices() {
+  static Future<List<HidDevice>> getAttachedDevices() {
     return HidPlatform.instance.getAttachedDevices();
   }
 }

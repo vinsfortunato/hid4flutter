@@ -17,7 +17,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
-  final _hid4flutterPlugin = Hid();
 
   @override
   void initState() {
@@ -36,7 +35,7 @@ class _MyAppState extends State<MyApp> {
       platformVersion = 'Failed to get platform version.';
     }
 
-    List<HidDevice> devices = await Hid().getAttachedDevices();
+    List<HidDevice> devices = await Hid.getAttachedDevices();
 
     print(devices);
 
