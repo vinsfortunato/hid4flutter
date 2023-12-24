@@ -4,25 +4,24 @@ import 'package:hid4flutter/hid4flutter_platform_interface.dart';
 import 'package:hid4flutter/hid4flutter_method_channel.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-class MockHid4flutterPlatform
+class MockHid4FlutterPlatform
     with MockPlatformInterfaceMixin
-    implements Hid4flutterPlatform {
-
+    implements Hid4FlutterPlatform {
   @override
   Future<String?> getPlatformVersion() => Future.value('42');
 }
 
 void main() {
-  final Hid4flutterPlatform initialPlatform = Hid4flutterPlatform.instance;
+  final Hid4FlutterPlatform initialPlatform = Hid4FlutterPlatform.instance;
 
-  test('$MethodChannelHid4flutter is the default instance', () {
-    expect(initialPlatform, isInstanceOf<MethodChannelHid4flutter>());
+  test('$MethodChannelHid4Flutter is the default instance', () {
+    expect(initialPlatform, isInstanceOf<MethodChannelHid4Flutter>());
   });
 
   test('getPlatformVersion', () async {
-    Hid4flutter hid4flutterPlugin = Hid4flutter();
-    MockHid4flutterPlatform fakePlatform = MockHid4flutterPlatform();
-    Hid4flutterPlatform.instance = fakePlatform;
+    Hid4Flutter hid4flutterPlugin = Hid4Flutter();
+    MockHid4FlutterPlatform fakePlatform = MockHid4FlutterPlatform();
+    Hid4FlutterPlatform.instance = fakePlatform;
 
     expect(await hid4flutterPlugin.getPlatformVersion(), '42');
   });

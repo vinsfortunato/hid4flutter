@@ -4,9 +4,9 @@
 
 #include "hid4flutter_plugin.h"
 
-void Hid4flutterPluginCApiRegisterWithRegistrar(
+void Hid4FlutterPluginCApiRegisterWithRegistrar(
     FlutterDesktopPluginRegistrarRef registrar) {
-  hid4flutter::Hid4flutterPlugin::RegisterWithRegistrar(
+  hid4flutter::Hid4FlutterPlugin::RegisterWithRegistrar(
       flutter::PluginRegistrarManager::GetInstance()
           ->GetRegistrar<flutter::PluginRegistrarWindows>(registrar));
 }

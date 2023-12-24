@@ -1,10 +1,10 @@
 import Cocoa
 import FlutterMacOS
 
-public class Hid4flutterPlugin: NSObject, FlutterPlugin {
+public class Hid4FlutterPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "hid4flutter", binaryMessenger: registrar.messenger)
-    let instance = Hid4flutterPlugin()
+    let instance = Hid4FlutterPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
 

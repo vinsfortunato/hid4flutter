@@ -16,14 +16,14 @@
 namespace hid4flutter {
 
 // static
-void Hid4flutterPlugin::RegisterWithRegistrar(
+void Hid4FlutterPlugin::RegisterWithRegistrar(
     flutter::PluginRegistrarWindows *registrar) {
   auto channel =
       std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
           registrar->messenger(), "hid4flutter",
           &flutter::StandardMethodCodec::GetInstance());
 
-  auto plugin = std::make_unique<Hid4flutterPlugin>();
+  auto plugin = std::make_unique<Hid4FlutterPlugin>();
 
   channel->SetMethodCallHandler(
       [plugin_pointer = plugin.get()](const auto &call, auto result) {
@@ -33,11 +33,11 @@ void Hid4flutterPlugin::RegisterWithRegistrar(
   registrar->AddPlugin(std::move(plugin));
 }
 
-Hid4flutterPlugin::Hid4flutterPlugin() {}
+Hid4FlutterPlugin::Hid4FlutterPlugin() {}
 
-Hid4flutterPlugin::~Hid4flutterPlugin() {}
+Hid4FlutterPlugin::~Hid4FlutterPlugin() {}
 
-void Hid4flutterPlugin::HandleMethodCall(
+void Hid4FlutterPlugin::HandleMethodCall(
     const flutter::MethodCall<flutter::EncodableValue> &method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
   if (method_call.method_name().compare("getPlatformVersion") == 0) {

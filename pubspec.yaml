@@ -37,16 +37,16 @@ flutter:
     platforms:
       android:
         package: com.github.vinsfortunato.hid4flutter
-        pluginClass: Hid4flutterPlugin
+        pluginClass: Hid4FlutterPlugin
         dartPluginClass: HidAndroid
       linux:
-        pluginClass: Hid4flutterPlugin
+        pluginClass: Hid4FlutterPlugin
         dartPluginClass: HidLinux
       macos:
-        pluginClass: Hid4flutterPlugin
+        pluginClass: Hid4FlutterPlugin
         dartPluginClass: HidMacos
       windows:
-        pluginClass: Hid4flutterPluginCApi
+        pluginClass: Hid4FlutterPluginCApi
         dartPluginClass: HidWindows
 
   # To add assets to your plugin package, add an assets section, like this:
