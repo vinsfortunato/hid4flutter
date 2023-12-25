@@ -78,9 +78,9 @@ class HidDeviceDesktop extends HidDevice {
   int get busType => _busType;
 
   @override
-  bool open() {
+  Future<void> open() async {
     if (isOpen) {
-      return true;
+      return;
     }
 
     using((Arena arena) {
@@ -91,16 +91,17 @@ class HidDeviceDesktop extends HidDevice {
         throw HidException('Failed to set non blocking mode. '
             'Error: $_getLastErrorMessage()');
       }
-    });
 
-    return _device != nullptr;
+      _device != nullptr;
+      return;
+    });
   }
 
   @override
   bool get isOpen => _device != nullptr;
 
   @override
-  void close() {
+  Future<void> close() async {
     if (!isOpen) {
       return;
     }

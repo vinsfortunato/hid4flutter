@@ -41,9 +41,7 @@ abstract class HidDevice {
   /// Open a HID device.
   ///
   /// Must be closed by calling [close] when no more needed.
-  ///
-  /// Returns true if successful.
-  bool open();
+  Future<void> open();
 
   /// Check if the HID device is open.
   bool get isOpen;
@@ -51,7 +49,7 @@ abstract class HidDevice {
   /// Close the HID device.
   ///
   /// Must be called when an open device is no more needed.
-  void close();
+  Future<void> close();
 
   /// Read an Input report from a HID device.
   ///
