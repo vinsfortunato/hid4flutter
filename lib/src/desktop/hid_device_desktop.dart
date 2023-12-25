@@ -88,7 +88,8 @@ class HidDeviceDesktop extends HidDevice {
 
       // Enable non blocking mode
       if (_hidapi.hid_set_nonblocking(_device, 1) == -1) {
-        throw HidException('Failed to set non blocking mode.');
+        throw HidException('Failed to set non blocking mode. '
+            'Error: $_getLastErrorMessage()');
       }
     });
 
@@ -143,7 +144,8 @@ class HidDeviceDesktop extends HidDevice {
           return Uint8List(0);
         }
       } else if (result == -1) {
-        throw HidReadException('Failed to read $amountToRead bytes.');
+        throw HidReadException('Failed to read $amountToRead bytes. '
+            'Error: $_getLastErrorMessage()');
       } else {
         return Uint8List.fromList(buffer.asTypedList(result));
       }
@@ -164,8 +166,10 @@ class HidDeviceDesktop extends HidDevice {
       buffer.asTypedList(bufferLength).setAll(1, data);
       int result =
           _hidapi.hid_write(_device, buffer.cast<UnsignedChar>(), bufferLength);
+
       if (result == -1) {
-        throw HidWriteException('Failed to write $bufferLength bytes.');
+        throw HidWriteException('Failed to write $bufferLength bytes. '
+            'Error: $_getLastErrorMessage()');
       } else {
         return result;
       }
@@ -183,7 +187,8 @@ class HidDeviceDesktop extends HidDevice {
           _device, buffer.cast<UnsignedChar>(), bufferLength);
 
       if (result == -1) {
-        throw HidReadException('Failed to read feature report.');
+        throw HidReadException('Failed to read feature report. '
+            'Error: $_getLastErrorMessage()');
       } else if (result == 0) {
         return Uint8List(0);
       } else {
@@ -208,7 +213,8 @@ class HidDeviceDesktop extends HidDevice {
           _device, buffer.cast<UnsignedChar>(), bufferLength);
       if (result == -1) {
         throw HidWriteException(
-            'Failed to send feature report of $bufferLength bytes.');
+            'Failed to send feature report of $bufferLength bytes. '
+            'Error: $_getLastErrorMessage()');
       } else {
         return result;
       }
@@ -229,17 +235,13 @@ class HidDeviceDesktop extends HidDevice {
       if (result == 0) {
         return buffer.toDartString();
       } else {
-        throw HidException('Failed to get indexed string with $index index.');
+        throw HidException('Failed to get indexed string with $index index. '
+            'Error: $_getLastErrorMessage()');
       }
     });
   }
 
-  @override
-  Future<String> getLastErrorMessage() async {
-    if (!isOpen) {
-      throw HidDeviceNotOpenException();
-    }
-
+  String _getLastErrorMessage() {
     return _hidapi.hid_error(_device).toDartString();
   }
 }

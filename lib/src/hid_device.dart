@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 abstract class HidDevice {
-  /// Uniquely identifies the HidDevice.
+  /// Get the HidDevice unique id.
   String get id;
 
   /// Get the platform-specific device path.
@@ -79,30 +79,23 @@ abstract class HidDevice {
   /// Get a string from an HID device, based on its string index.
   Future<String> getIndexedString(int index, {int maxLength = 256});
 
-  /// Get a string describing the last error which occurred.
-  ///
-  /// This function is intended for loggin/debugging purposes.
-  ///
-  /// If there was no error in the last function call the
-  /// returned string clearly indicates that.
-  Future<String> getLastErrorMessage();
-
   @override
   bool operator ==(covariant HidDevice other) {
     if (identical(this, other)) return true;
 
-    return other.path == path;
+    return other.id == id;
   }
 
   @override
   int get hashCode {
-    return path.hashCode;
+    return id.hashCode;
   }
 
   @override
   String toString() {
     return '''
       HidDevice [
+        id=$path,
         path=$path, 
         vendorId=0x${vendorId.toRadixString(16)}, 
         productId=0x${productId.toRadixString(16)},
