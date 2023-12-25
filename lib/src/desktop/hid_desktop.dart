@@ -53,7 +53,7 @@ class _HidDesktop extends HidPlatform {
   }
 
   @override
-  Future<List<HidDevice>> getAttachedDevices() async {
+  Future<List<HidDevice>> getDevices() async {
     List<HidDevice> devices = [];
 
     // Use vendorId = 0, productId = 0 to list all attached devices

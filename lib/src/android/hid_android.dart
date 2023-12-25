@@ -13,7 +13,7 @@ class HidAndroid extends HidPlatform {
   }
 
   @override
-  Future<List<HidDevice>> getAttachedDevices() {
+  Future<List<HidDevice>> getDevices() {
     // TODO: implement getAttachedDevices
     throw UnimplementedError();
   }

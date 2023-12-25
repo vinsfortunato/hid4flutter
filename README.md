@@ -49,12 +49,12 @@ To install `hid4flutter` in a Flutter project, follow these steps:
 
 ## Usage
 
-### List attached HID devices
+### Get devices list
 
 ```dart
 await Hid.init();
 
-List<HidDevice> devices = await Hid.getAttachedDevices();
+List<HidDevice> devices = await Hid.getDevices();
 
 // Do something with the list
 
@@ -69,7 +69,7 @@ await Hid.init();
 const vendorId = 0x55;
 const productId = 0x13;
 
-List<HidDevice> devices = await Hid.getAttachedDevices();
+List<HidDevice> devices = await Hid.getDevices();
 
 HidDevice? device = devices
     .where((dev) => dev.vendorId == vendorId)
@@ -80,6 +80,46 @@ HidDevice? device = devices
 
 await Hid.exit();
 ```
+
+### Send Output Report
+
+```dart
+final HidDevice device = ...
+
+await device.open();
+
+// Send an output report of 32 bytes (all zeroes).
+// The reportId is optional (default is 0x00).
+// It will be prefixed to the data as per HID rules.
+Uint8List data = Uint8List(32);
+int bytesWritten = await device.write(reportId: 0x00, reportData);
+
+// This will print 'Sent 33 bytes.' 
+// (32 bytes + 1 byte for reportId).
+print('Sent $bytesWritten bytes.');
+
+// Close when no more needed
+await device.close();
+```
+
+### Receive Input Report
+```dart
+final HidDevice device = ...
+
+await device.open();
+
+// Receive a report of 32 bytes with timeout of 2 seconds.
+Uint8List data = await device.read(32, timeout: const Duration(seconds: 2));
+
+// First byte is always the reportId.
+int reportId = data[0];
+
+print('Received report with id $reportId: $data.');
+
+// Close when no more needed
+await device.close();
+```
+
 
 ## License
 

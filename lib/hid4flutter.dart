@@ -15,7 +15,7 @@ class Hid {
     return HidPlatform.instance.exit();
   }
 
-  static Future<List<HidDevice>> getAttachedDevices() {
-    return HidPlatform.instance.getAttachedDevices();
+  static Future<List<HidDevice>> getDevices() {
+    return HidPlatform.instance.getDevices();
   }
 }

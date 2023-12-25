@@ -26,5 +26,5 @@ abstract class HidPlatform extends PlatformInterface {
 
   Future<void> exit();
 
-  Future<List<HidDevice>> getAttachedDevices();
+  Future<List<HidDevice>> getDevices();
 }

@@ -35,7 +35,7 @@ class _MyAppState extends State<MyApp> {
       platformVersion = 'Failed to get platform version.';
     }
 
-    List<HidDevice> devices = await Hid.getAttachedDevices();
+    List<HidDevice> devices = await Hid.getDevices();
 
     print(devices);
 

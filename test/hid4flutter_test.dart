@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hid4flutter/hid4flutter.dart';
+import 'package:hid4flutter/src/hid_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 class MockHidPlatform with MockPlatformInterfaceMixin implements HidPlatform {
@@ -9,7 +10,7 @@ class MockHidPlatform with MockPlatformInterfaceMixin implements HidPlatform {
   }
 
   @override
-  Future<List<HidDevice>> getAttachedDevices() async {
+  Future<List<HidDevice>> getDevices() async {
     return List.empty();
   }
 
@@ -24,6 +25,6 @@ void main() {
     MockHidPlatform fakePlatform = MockHidPlatform();
     HidPlatform.instance = fakePlatform;
 
-    expect(await fakePlatform.getAttachedDevices(), List.empty());
+    expect(await fakePlatform.getDevices(), List.empty());
   });
 }
