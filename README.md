@@ -71,7 +71,7 @@ const productId = 0x13;
 
 List<HidDevice> devices = await Hid.getAttachedDevices();
 
-final device = devices
+HidDevice? device = devices
     .where((dev) => dev.vendorId == vendorId)
     .where((dev) => dev.productId == productId)
     .firstOrNull;
