@@ -28,7 +28,7 @@ To install `hid4flutter` in a Flutter project, follow these steps:
 
     ```yaml
     dependencies:
-      hid4dart: ^0.1.0
+      hid4flutter: ^0.1.0
     ```
 
     Replace `^0.1.0` with the latest version of the plugin.
@@ -64,7 +64,21 @@ await Hid.exit();
 ### Get device by vendorId and productId
 
 ```dart
-//TODO Write usage example
+await Hid.init();
+
+const vendorId = 0x55;
+const productId = 0x13;
+
+List<HidDevice> devices = await Hid.getAttachedDevices();
+
+final device = devices
+    .where((dev) => dev.vendorId == vendorId)
+    .where((dev) => dev.productId == productId)
+    .firstOrNull;
+
+// Do something with the device
+
+await Hid.exit();
 ```
 
 ## License
