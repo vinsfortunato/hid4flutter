@@ -1,3 +1,5 @@
 ## 0.0.1
 
-* TODO: Describe initial release.
+Initial release. 
+
+**Note:** As of now, `hid4flutter` is only supported on Windows. Support for other platforms will be added in future releases.

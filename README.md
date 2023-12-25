@@ -28,10 +28,10 @@ To install `hid4flutter` in a Flutter project, follow these steps:
 
     ```yaml
     dependencies:
-      hid4flutter: ^0.1.0
+      hid4flutter: ^0.0.1
     ```
 
-    Replace `^0.1.0` with the latest version of the plugin.
+    Replace `^0.0.1` with the latest version of the plugin.
 
 2. Run the following command to install the dependency:
 
