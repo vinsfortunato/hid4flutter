@@ -1,6 +1,6 @@
 # hid4flutter
 
-[![version](https://img.shields.io/badge/version-0.0.1-red)]()
+[![pub](https://img.shields.io/badge/pub-0.0.1-blue)]()
 [![license: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 
 `hid4flutter` is a Flutter plugin that enables communication with HID (Human Interface Device) devices from a Flutter application. 
@@ -13,11 +13,7 @@ Contributions are welcome! Feel free to submit issues and pull requests to help 
 
 ## Supported Platforms
 
-- [x] Windows
-- [ ] macOS
-- [ ] Linux
-- [ ] Android
-- [ ] iOS
+- Windows
 
 **Note:** As of now, `hid4flutter` is only supported on Windows. Support for other platforms will be added in future releases.
 
