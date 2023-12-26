@@ -14,8 +14,9 @@ Contributions are welcome! Feel free to submit issues and pull requests to help 
 ## Supported Platforms
 
 - Windows
+- macOS
 
-**Note:** As of now, `hid4flutter` is only supported on Windows. Support for other platforms will be added in future releases.
+**Note:** As of now, `hid4flutter` is only supported on Windows and macOS. Support for other platforms will be added in future releases. 
 
 ## Installation
 
