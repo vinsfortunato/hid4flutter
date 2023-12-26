@@ -19,7 +19,7 @@ class HidMacos extends _HidDesktop {
   HidMacos(super.hidapi);
 
   static registerWith() {
-    final hidapi = NativeLibrary(DynamicLibrary.open('libhidapi.dylib'));
+    final hidapi = NativeLibrary(DynamicLibrary.executable());
     HidPlatform.instance = HidMacos(hidapi);
   }
 }
