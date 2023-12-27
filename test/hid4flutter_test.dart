@@ -10,17 +10,22 @@ class MockHidPlatform with MockPlatformInterfaceMixin implements HidPlatform {
   }
 
   @override
-  Future<List<HidDevice>> getDevices() async {
-    return List.empty();
-  }
-
-  @override
   Future<bool> init() {
     throw UnimplementedError();
   }
+
+  @override
+  Future<List<HidDevice>> getDevices({
+    int? vendorId,
+    int? productId,
+    int? usagePage,
+    int? usage,
+  }) async {
+    return List.empty();
+  }
 }
 
-void main() {
+void main() async {
   test('attachedDevices', () async {
     MockHidPlatform fakePlatform = MockHidPlatform();
     HidPlatform.instance = fakePlatform;

@@ -53,22 +53,38 @@ class _HidDesktop extends HidPlatform {
   }
 
   @override
-  Future<List<HidDevice>> getDevices() async {
+  Future<List<HidDevice>> getDevices({
+    int? vendorId,
+    int? productId,
+    int? usagePage,
+    int? usage,
+  }) async {
     List<HidDevice> devices = [];
 
-    // Use vendorId = 0, productId = 0 to list all attached devices
     // HidApi hid_enumerate returns a linked list of device info.
-    final pointer = _hidapi.hid_enumerate(0, 0);
+    final pointer = _hidapi.hid_enumerate(vendorId ?? 0, productId ?? 0);
 
     var current = pointer;
     while (current.address != nullptr.address) {
       final info = current.ref;
+
+      if (usagePage != null && usagePage != info.usage_page) {
+        // Skip device
+        continue;
+      }
+
+      if (usage != null && usage != info.usage) {
+        // Skip device
+        continue;
+      }
+
       devices.add(HidDeviceDesktop(
         hidapi: _hidapi,
         info: info,
       ));
       current = info.next;
     }
+
     _hidapi.hid_free_enumeration(pointer);
     return devices;
   }

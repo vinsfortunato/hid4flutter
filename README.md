@@ -47,7 +47,7 @@ To install `hid4flutter` in a Flutter project, follow these steps:
 
 ## Usage
 
-### Get devices list
+### Get all connected devices list
 
 ```dart
 await Hid.init();
@@ -64,15 +64,11 @@ await Hid.exit();
 ```dart
 await Hid.init();
 
-const vendorId = 0x55;
-const productId = 0x13;
+List<HidDevice> devices = await Hid.getDevices(vendorId: 0x55, productId: 0x13);
 
-List<HidDevice> devices = await Hid.getDevices();
-
-HidDevice? device = devices
-    .where((dev) => dev.vendorId == vendorId)
-    .where((dev) => dev.productId == productId)
-    .firstOrNull;
+// Since multiple devices can match the same vendorId 
+//and productId, get the first device or null.
+HidDevice? device = devices.firstOrNull;
 
 // Do something with the device
 

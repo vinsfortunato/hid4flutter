@@ -15,7 +15,20 @@ class Hid {
     return HidPlatform.instance.exit();
   }
 
-  static Future<List<HidDevice>> getDevices() {
+  /// Get a list of connected HID devices that match the
+  /// filters passed in. If no filter is provided get all
+  /// connected devices.
+  ///
+  /// Example usage:
+  /// ```dart
+  /// List<HidDevice> devices = await getDevices(vendorId: 0x25, productId: 0x26);
+  /// ```
+  static Future<List<HidDevice>> getDevices({
+    int? vendorId,
+    int? productId,
+    int? usagePage,
+    int? usage,
+  }) {
     return HidPlatform.instance.getDevices();
   }
 }
