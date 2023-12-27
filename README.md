@@ -1,6 +1,6 @@
 # hid4flutter
 
-[![pub](https://img.shields.io/badge/pub-0.0.1-blue)](https://pub.dev/packages/hid4flutter)
+[![pub](https://img.shields.io/badge/pub-0.1.1-blue)](https://pub.dev/packages/hid4flutter)
 [![license: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 
 `hid4flutter` is a Flutter plugin that enables communication with HID (Human Interface Device) devices from a Flutter application.
@@ -40,10 +40,10 @@ To install `hid4flutter` in a Flutter project, follow these steps:
 
     ```yaml
     dependencies:
-      hid4flutter: ^0.0.1
+      hid4flutter: ^0.1.1
     ```
 
-    Replace `^0.0.1` with the latest version of the plugin.
+    Replace `^0.1.1` with the latest version of the plugin.
 
 2. Run the following command to install the dependency:
 

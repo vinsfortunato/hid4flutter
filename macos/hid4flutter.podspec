@@ -4,10 +4,10 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'hid4flutter'
-  s.version          = '0.1.0'
-  s.summary          = 'A new Flutter plugin project.'
+  s.version          = '0.1.1'
+  s.summary          = 'A flutter plugin for HID.'
   s.description      = <<-DESC
-A new Flutter plugin project.
+A flutter plugin for communicating with HID devices (Human Interface Device).
                        DESC
   s.homepage         = 'http://example.com'
   s.license          = { :file => '../LICENSE' }
