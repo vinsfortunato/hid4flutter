@@ -1,3 +1,9 @@
+## 0.1.1
+
+### Changed
+
+- Fix test to clear pub publish warnings.
+
 ## 0.1.0
 
 ### Added
@@ -24,8 +30,6 @@
 - Remove unused/unnecessary native code.
 - Fix pointer of Char/WChar to String conversions.
 - Fix input report receiving implementation on desktop platforms.
-
-**Note:** As of now, `hid4flutter` is only supported on Windows. Support for other platforms will be added in future releases.
 
 ## 0.0.1
 
