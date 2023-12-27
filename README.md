@@ -67,7 +67,7 @@ await Hid.init();
 List<HidDevice> devices = await Hid.getDevices(vendorId: 0x55, productId: 0x13);
 
 // Since multiple devices can match the same vendorId 
-//and productId, get the first device or null.
+// and productId, get the first device or null.
 HidDevice? device = devices.firstOrNull;
 
 // Do something with the device
