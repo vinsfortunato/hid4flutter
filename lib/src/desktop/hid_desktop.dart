@@ -28,7 +28,7 @@ class HidLinux extends _HidDesktop {
   HidLinux(super.hidapi);
 
   static registerWith() {
-    final hidapi = NativeLibrary(DynamicLibrary.open('libhidapi.so'));
+    final hidapi = NativeLibrary(DynamicLibrary.open('libhidapi-hidraw.so.0'));
     HidPlatform.instance = HidLinux(hidapi);
   }
 }
