@@ -7,18 +7,6 @@ class HidAndroid extends HidPlatform {
   }
 
   @override
-  Future<void> exit() {
-    // TODO: implement exit
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> init() {
-    // TODO: implement init
-    throw UnimplementedError();
-  }
-
-  @override
   Future<List<HidDevice>> getDevices({
     int? vendorId,
     int? productId,
