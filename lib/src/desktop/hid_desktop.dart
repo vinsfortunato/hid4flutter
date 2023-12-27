@@ -38,19 +38,9 @@ class _HidDesktop extends HidPlatform {
 
   final NativeLibrary _hidapi;
 
-  @override
-  Future<void> init() async {
-    if (_hidapi.hid_init() == -1) {
-      throw HidException('HidApi did not initialise.');
-    }
-  }
-
-  @override
-  Future<void> exit() async {
-    if (_hidapi.hid_exit() == -1) {
-      throw HidException('HidApi did not exit correctly.');
-    }
-  }
+  // Track open devices. Allows to free hidapi resources
+  // when all devices get closed.
+  final List<HidDevice> _openDevices = [];
 
   @override
   Future<List<HidDevice>> getDevices({
@@ -78,14 +68,43 @@ class _HidDesktop extends HidPlatform {
         continue;
       }
 
-      devices.add(HidDeviceDesktop(
-        hidapi: _hidapi,
-        info: info,
-      ));
+      final device = HidDeviceDesktop(hidapi: _hidapi, info: info);
+
+      // Listen for connection open/close
+      device.onOpen(() => _onDeviceOpen(device));
+      device.onClose(() => _onDeviceClose(device));
+
+      devices.add(device);
+
       current = info.next;
     }
 
     _hidapi.hid_free_enumeration(pointer);
+
+    _exitIfPossible();
+
     return devices;
+  }
+
+  void _onDeviceOpen(HidDevice device) {
+    _openDevices.add(device);
+  }
+
+  void _onDeviceClose(HidDevice device) {
+    _openDevices.remove(device);
+    _exitIfPossible();
+  }
+
+  Future<void> _exit() async {
+    if (_hidapi.hid_exit() == -1) {
+      throw HidException('HidApi did not exit correctly.');
+    }
+  }
+
+  void _exitIfPossible() {
+    // No more devices open. Free hidapi resources.
+    if (_openDevices.isEmpty) {
+      _exit();
+    }
   }
 }

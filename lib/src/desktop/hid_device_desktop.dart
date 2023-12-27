@@ -25,6 +25,9 @@ class HidDeviceDesktop extends HidDevice {
   final NativeLibrary _hidapi;
   Pointer<hid_device_> _device = nullptr;
 
+  final List<void Function()> _onOpenCallbacks = [];
+  final List<void Function()> _onCloseCallbacks = [];
+
   HidDeviceDesktop({
     required NativeLibrary hidapi,
     required hid_device_info info,
@@ -86,19 +89,32 @@ class HidDeviceDesktop extends HidDevice {
     using((Arena arena) {
       _device = _hidapi.hid_open_path(path.toCharPointer(allocator: arena));
 
+      if (_device == nullptr) {
+        throw HidException('Failed to open hid device. '
+            'Error: $_getLastErrorMessage()');
+      }
+
       // Enable non blocking mode
       if (_hidapi.hid_set_nonblocking(_device, 1) == -1) {
         throw HidException('Failed to set non blocking mode. '
             'Error: $_getLastErrorMessage()');
       }
 
-      _device != nullptr;
+      // Notify listeners
+      for (var callback in _onOpenCallbacks) {
+        callback.call();
+      }
+
       return;
     });
   }
 
   @override
   bool get isOpen => _device != nullptr;
+
+  void onOpen(void Function() onOpenCallback) {
+    _onOpenCallbacks.add(onOpenCallback);
+  }
 
   @override
   Future<void> close() async {
@@ -108,6 +124,15 @@ class HidDeviceDesktop extends HidDevice {
 
     _hidapi.hid_close(_device);
     _device = nullptr;
+
+    // Notify listeners
+    for (var callback in _onCloseCallbacks) {
+      callback.call();
+    }
+  }
+
+  void onClose(void Function() onCloseCallback) {
+    _onCloseCallbacks.add(onCloseCallback);
   }
 
   @override

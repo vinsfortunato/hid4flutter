@@ -7,14 +7,6 @@ export 'src/android/hid_android.dart';
 export 'src/desktop/hid_desktop.dart';
 
 class Hid {
-  static Future<void> init() {
-    return HidPlatform.instance.init();
-  }
-
-  static Future<void> exit() {
-    return HidPlatform.instance.exit();
-  }
-
   /// Get a list of connected HID devices that match the
   /// filters passed in. If no filter is provided get all
   /// connected devices.
