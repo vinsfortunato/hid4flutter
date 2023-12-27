@@ -13,7 +13,7 @@ project(${PROJECT_NAME} LANGUAGES CXX)
 cmake_policy(VERSION 3.14...3.25)
 
 # Set hidapi configuration
-set(HIDAPI_VERSION "0.11.2" CACHE STRING "hidapi version")
+set(HIDAPI_VERSION "0.14.0" CACHE STRING "hidapi version")
 
 # Download hidapi sources
 include(../windows/DownloadProject.cmake)
