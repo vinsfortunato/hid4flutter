@@ -86,16 +86,17 @@ HidDevice? device = devices.firstOrNull;
 ```dart
 final HidDevice device = ...
 
-await device.open();
+try {
+  await device.open();
 
-// Send an Output report of 32 bytes (all zeroes).
-// The reportId is optional (default is 0x00).
-// It will be prefixed to the data as per HID rules.
-Uint8List data = Uint8List(32);
-await device.sendReport(reportId: 0x00, reportData);
-
-// Close when no more needed
-await device.close();
+  // Send an Output report of 32 bytes (all zeroes).
+  // The reportId is optional (default is 0x00).
+  // It will be prefixed to the data as per HID rules.
+  Uint8List data = Uint8List(32);
+  await device.sendReport(reportId: 0x00, reportData);
+} finally {
+  await device.close();
+}
 ```
 
 ### Receive Input Report
@@ -103,18 +104,19 @@ await device.close();
 ```dart
 final HidDevice device = ...
 
-await device.open();
+try {
+  await device.open();
 
-// Receive a report of 32 bytes with timeout of 2 seconds.
-Uint8List data = await device.receiveReport(32, timeout: const Duration(seconds: 2));
+  // Receive a report of 32 bytes with timeout of 2 seconds.
+  Uint8List data = await device.receiveReport(32, timeout: const Duration(seconds: 2));
 
-// First byte is always the reportId.
-int reportId = data[0];
+  // First byte is always the reportId.
+  int reportId = data[0];
 
-print('Received report with id $reportId: $data.');
-
-// Close when no more needed
-await device.close();
+  print('Received report with id $reportId: $data.');
+} finally {
+  await device.close();
+}
 ```
 
 ## Planned features

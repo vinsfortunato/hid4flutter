@@ -78,6 +78,12 @@ abstract class HidDevice {
   Future<void> close();
 
   /// Get the Input report stream.
+  ///
+  /// Returns a stream containing each byte received from the device as
+  /// part of an input stream.
+  ///
+  /// Throws an [StateError] if the device is not open.
+  /// Throws an [HidException] if getting input reports fails.
   Stream<int> inputStream();
 
   /// Receive an Input report from the HID device.
