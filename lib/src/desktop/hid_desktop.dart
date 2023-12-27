@@ -95,16 +95,16 @@ class _HidDesktop extends HidPlatform {
     _exitIfPossible();
   }
 
-  Future<void> _exit() async {
-    if (_hidapi.hid_exit() == -1) {
-      throw HidException('HidApi did not exit correctly.');
-    }
-  }
-
   void _exitIfPossible() {
     // No more devices open. Free hidapi resources.
     if (_openDevices.isEmpty) {
       _exit();
+    }
+  }
+
+  void _exit() async {
+    if (_hidapi.hid_exit() == -1) {
+      throw HidException('HidApi did not exit correctly.');
     }
   }
 }
