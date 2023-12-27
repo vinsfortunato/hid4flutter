@@ -102,8 +102,10 @@ abstract class HidDevice {
   ///
   /// Throws an [StateError] if the device is not open.
   /// Throws an [HidException] if the attempt to get the report fails.
-  Future<Uint8List> receiveFeatureReport(int reportId,
-      {int bufferLength = 1024});
+  Future<Uint8List> receiveFeatureReport(
+    int reportId, {
+    int bufferSize = 1024,
+  });
 
   /// Send a Feature report to the HID device.
   ///
