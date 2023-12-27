@@ -2,7 +2,7 @@ import 'dart:typed_data';
 import 'hid_exception.dart';
 
 /// Represents an HID device. Provides properties for accessing information
-/// about the device, functions for opening and closing the connection, and
+/// about the device, methods for opening and closing the connection, and
 /// the sending and receiving of reports.
 ///
 /// Example usage:
@@ -77,6 +77,9 @@ abstract class HidDevice {
   /// Throws an [HidException] if the attempt to close the device fails.
   Future<void> close();
 
+  /// Get the Input report stream.
+  Stream<int> inputStream();
+
   /// Receive an Input report from the HID device.
   ///
   /// An optional [timeout] can be passed for setting
@@ -85,7 +88,7 @@ abstract class HidDevice {
   /// Throws an [StateError] if the device is not open.
   /// Throws an [TimeoutException] if the attempt to receive the report time out.
   /// Throws an [HidException] if the attempt to receive the report fails.
-  Future<Uint8List> receiveReport(int amountToRead, {Duration? timeout});
+  Future<Uint8List> receiveReport(int reportLength, {Duration? timeout});
 
   /// Send an Output report to the HID device.
   ///
@@ -99,7 +102,8 @@ abstract class HidDevice {
   ///
   /// Throws an [StateError] if the device is not open.
   /// Throws an [HidException] if the attempt to get the report fails.
-  Future<Uint8List> getFeatureReport(int reportId, {int bufferLength = 1024});
+  Future<Uint8List> receiveFeatureReport(int reportId,
+      {int bufferLength = 1024});
 
   /// Send a Feature report to the HID device.
   ///

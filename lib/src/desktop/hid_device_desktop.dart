@@ -136,46 +136,53 @@ class HidDeviceDesktop extends HidDevice {
   }
 
   @override
-  Future<Uint8List> receiveReport(int amountToRead, {Duration? timeout}) {
+  Stream<int> inputStream() async* {
     if (!isOpen) {
       throw StateError('Device is not open.');
     }
 
-    return using((Arena arena) async {
-      var buffer = arena<Uint8>(amountToRead);
+    const bufferSize = 1024;
+    final arena = Arena();
 
-      // Call hid_read() every 100 microseconds until it
-      // returns some data or the timeout expires.
-      //
-      // If the timeout is not specified return an empty list
-      // when the first call to hid_read() returns no data.
-      final timeoutCompleter = Completer();
-      Future.delayed(timeout ?? Duration.zero).then(timeoutCompleter.complete);
-
-      int result;
-
-      //TODO collect data until amountToRead bytes have been received.
-
-      do {
+    try {
+      var buffer = arena<Uint8>(bufferSize);
+      int result = 0;
+      while (isOpen) {
         result = _hidapi.hid_read(
-            _device, buffer.cast<UnsignedChar>(), amountToRead);
+          _device,
+          buffer.cast<UnsignedChar>(),
+          bufferSize,
+        );
 
-        await Future.delayed(Duration(microseconds: 100));
-      } while (result == 0 && !timeoutCompleter.isCompleted);
-
-      if (result == 0) {
-        if (timeout != null) {
-          throw TimeoutException('Read timed out.');
-        } else {
-          return Uint8List(0);
+        if (result == -1) {
+          throw HidException('Failed to receive input report. '
+              'Error: $_getLastErrorMessage()');
+        } else if (result > 0) {
+          for (var i = 0; i < result; i++) {
+            yield buffer[i];
+          }
         }
-      } else if (result == -1) {
-        throw HidException('Failed to read $amountToRead bytes. '
-            'Error: $_getLastErrorMessage()');
-      } else {
-        return Uint8List.fromList(buffer.asTypedList(result));
+
+        // Polling with 100 microseconds interval
+        await Future.delayed(const Duration(microseconds: 100));
       }
-    });
+    } finally {
+      arena.releaseAll();
+    }
+  }
+
+  @override
+  Future<Uint8List> receiveReport(int reportLength, {Duration? timeout}) async {
+    if (!isOpen) {
+      throw StateError('Device is not open.');
+    }
+
+    var result = inputStream().take(reportLength).toList();
+    if (timeout != null) {
+      result = result.timeout(timeout);
+    }
+
+    return Uint8List.fromList(await result);
   }
 
   @override
@@ -184,17 +191,17 @@ class HidDeviceDesktop extends HidDevice {
       throw StateError('Device is not open.');
     }
 
-    int bufferLength = data.length + 1;
+    int bufferSize = data.length + 1;
 
     using((Arena arena) {
-      var buffer = arena<Uint8>(bufferLength);
+      var buffer = arena<Uint8>(bufferSize);
       buffer[0] = reportId;
-      buffer.asTypedList(bufferLength).setAll(1, data);
+      buffer.asTypedList(bufferSize).setAll(1, data);
       int result =
-          _hidapi.hid_write(_device, buffer.cast<UnsignedChar>(), bufferLength);
+          _hidapi.hid_write(_device, buffer.cast<UnsignedChar>(), bufferSize);
 
       if (result == -1) {
-        throw HidException('Failed to write $bufferLength bytes. '
+        throw HidException('Failed to write $bufferSize bytes. '
             'Error: $_getLastErrorMessage()');
       }
       //TODO what to do if result != buffer.length ?
@@ -202,14 +209,14 @@ class HidDeviceDesktop extends HidDevice {
   }
 
   @override
-  Future<Uint8List> getFeatureReport(int reportId,
-      {int bufferLength = 1024}) async {
+  Future<Uint8List> receiveFeatureReport(int reportId,
+      {int bufferSize = 1024}) async {
     return using((Arena arena) {
-      var buffer = arena<Uint8>(bufferLength);
+      var buffer = arena<Uint8>(bufferSize);
       buffer[0] = reportId;
-      buffer.asTypedList(bufferLength).fillRange(1, bufferLength, 0);
+      buffer.asTypedList(bufferSize).fillRange(1, bufferSize, 0);
       int result = _hidapi.hid_get_feature_report(
-          _device, buffer.cast<UnsignedChar>(), bufferLength);
+          _device, buffer.cast<UnsignedChar>(), bufferSize);
 
       if (result == -1) {
         throw HidException('Failed to read feature report. '
@@ -228,17 +235,17 @@ class HidDeviceDesktop extends HidDevice {
       throw StateError('Device is not open.');
     }
 
-    int bufferLength = data.length + 1;
+    int bufferSize = data.length + 1;
 
     using((Arena arena) {
-      var buffer = arena<Uint8>(bufferLength);
+      var buffer = arena<Uint8>(bufferSize);
       buffer[0] = reportId;
-      buffer.asTypedList(bufferLength).setAll(1, data);
+      buffer.asTypedList(bufferSize).setAll(1, data);
       int result = _hidapi.hid_send_feature_report(
-          _device, buffer.cast<UnsignedChar>(), bufferLength);
+          _device, buffer.cast<UnsignedChar>(), bufferSize);
       if (result == -1) {
         throw HidException(
-            'Failed to send feature report of $bufferLength bytes. '
+            'Failed to send feature report of $bufferSize bytes. '
             'Error: $_getLastErrorMessage()');
       }
       //TODO what to do if result != buffer.length ?
