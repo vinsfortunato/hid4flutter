@@ -5,16 +5,6 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 class MockHidPlatform with MockPlatformInterfaceMixin implements HidPlatform {
   @override
-  Future<void> exit() {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<bool> init() {
-    throw UnimplementedError();
-  }
-
-  @override
   Future<List<HidDevice>> getDevices({
     int? vendorId,
     int? productId,
@@ -26,7 +16,7 @@ class MockHidPlatform with MockPlatformInterfaceMixin implements HidPlatform {
 }
 
 void main() async {
-  test('attachedDevices', () async {
+  test('devices', () async {
     MockHidPlatform fakePlatform = MockHidPlatform();
     HidPlatform.instance = fakePlatform;
 
