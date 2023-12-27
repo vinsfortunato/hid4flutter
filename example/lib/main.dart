@@ -89,7 +89,7 @@ class DeviceListScreenState extends State<DeviceListScreen> {
                 Text('Usage Page: ${device.usagePage}'),
                 Text('Usage: ${device.usage}'),
                 Text('Manufacturer: ${device.manufacturer}'),
-                Text('Product Name: ${device.product}')
+                Text('Product Name: ${device.productName}')
               ],
             ),
           ),
