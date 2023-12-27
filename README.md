@@ -3,11 +3,13 @@
 [![pub](https://img.shields.io/badge/pub-0.0.1-blue)](https://pub.dev/packages/hid4flutter)
 [![license: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 
-`hid4flutter` is a Flutter plugin that enables communication with HID (Human Interface Device) devices from a Flutter application. 
+`hid4flutter` is a Flutter plugin that enables communication with HID (Human Interface Device) devices from a Flutter application.
 
 ## Disclaimer
 
 **Warning:** This plugin is currently under development, and the API is subject to change. Use it at your own risk in a production environment.
+
+Some features are planned but their development has been postponed. Check the list [here](#planned-features).
 
 Contributions are welcome! Feel free to submit issues and pull requests to help improve this plugin.
 
@@ -17,11 +19,18 @@ Contributions are welcome! Feel free to submit issues and pull requests to help 
 - macOS
 - Linux
 
-**Note:** Support for other platforms will be added in future releases.
+**Note:** Some platforms [will be supported](#planned-platform-support) in future releases.
 
 ### Implementation details
 
 Desktop support (Windows/macOS/Linux) is achieved by using [hidapi](https://github.com/libusb/hidapi) and Dart FFI.
+
+### Planned platform support
+
+Support for the following platforms is planned to be added in the near future:
+
+- **Android**: can be easily supported using MethodChannel and Android HID.
+- **Web**: experimental WebHID can be used to support the Web platform.
 
 ## Installation
 
@@ -107,6 +116,18 @@ print('Received report with id $reportId: $data.');
 // Close when no more needed
 await device.close();
 ```
+
+## Planned features
+
+These features are planned to be developed but currently not supported:
+
+- **Get device HID report descriptor**: request the report descriptor from the device
+  and return it as a structured objects represeting the HID collections.
+  Using hidapi version >= 0.14.0 gives the ability to easily get
+  the report descriptor bytes. A parser is required however to get a
+  structured object.
+- **Notify about device connection/disconnection events**: add the possibility to
+  listen connection/disconnection events to avoid polling getDevices(...) function.
 
 ## License
 

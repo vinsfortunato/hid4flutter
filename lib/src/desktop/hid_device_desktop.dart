@@ -179,14 +179,14 @@ class HidDeviceDesktop extends HidDevice {
   }
 
   @override
-  Future<int> sendReport(Uint8List data, {int reportId = 0x00}) async {
+  Future<void> sendReport(Uint8List data, {int reportId = 0x00}) async {
     if (!isOpen) {
       throw StateError('Device is not open.');
     }
 
     int bufferLength = data.length + 1;
 
-    return using((Arena arena) {
+    using((Arena arena) {
       var buffer = arena<Uint8>(bufferLength);
       buffer[0] = reportId;
       buffer.asTypedList(bufferLength).setAll(1, data);
@@ -196,9 +196,8 @@ class HidDeviceDesktop extends HidDevice {
       if (result == -1) {
         throw HidException('Failed to write $bufferLength bytes. '
             'Error: $_getLastErrorMessage()');
-      } else {
-        return result;
       }
+      //TODO what to do if result != buffer.length ?
     });
   }
 
@@ -241,9 +240,8 @@ class HidDeviceDesktop extends HidDevice {
         throw HidException(
             'Failed to send feature report of $bufferLength bytes. '
             'Error: $_getLastErrorMessage()');
-      } else {
-        return result;
       }
+      //TODO what to do if result != buffer.length ?
     });
   }
 
