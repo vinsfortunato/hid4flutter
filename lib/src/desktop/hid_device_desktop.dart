@@ -16,7 +16,7 @@ class HidDeviceDesktop extends HidDevice {
   final String _serialNumber;
   final int _releaseNumber;
   final String _manufacturer;
-  final String _product;
+  final String _productName;
   final int _usagePage;
   final int _usage;
   final int _interfaceNumber;
@@ -38,7 +38,7 @@ class HidDeviceDesktop extends HidDevice {
         _serialNumber = info.serial_number.toDartString(),
         _releaseNumber = info.release_number,
         _manufacturer = info.manufacturer_string.toDartString(),
-        _product = info.product_string.toDartString(),
+        _productName = info.product_string.toDartString(),
         _usagePage = info.usage_page,
         _usage = info.usage,
         _interfaceNumber = info.interface_number,
@@ -66,7 +66,7 @@ class HidDeviceDesktop extends HidDevice {
   String get manufacturer => _manufacturer;
 
   @override
-  String get product => _product;
+  String get productName => _productName;
 
   @override
   int get usagePage => _usagePage;

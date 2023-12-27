@@ -23,8 +23,8 @@ abstract class HidDevice {
   /// Get the manufacturer String.
   String get manufacturer;
 
-  /// Get the product String.
-  String get product;
+  /// Get the product name String.
+  String get productName;
 
   /// Get the usage page for this Device/Interface.
   int get usagePage;
@@ -100,7 +100,7 @@ abstract class HidDevice {
         serialNumber=$serialNumber, 
         releaseNumber=0x${releaseNumber.toRadixString(16)}, 
         manufacturer=$manufacturer, 
-        product=$product, 
+        productName=$productName, 
         usagePage=0x${usagePage.toRadixString(16)}, 
         usage=0x${usage.toRadixString(16)}, 
         interfaceNumber=$interfaceNumber
