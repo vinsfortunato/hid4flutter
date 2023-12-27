@@ -83,7 +83,7 @@ class HidDeviceDesktop extends HidDevice {
   @override
   Future<void> open() async {
     if (isOpen) {
-      return;
+      throw StateError('Device is already open.');
     }
 
     using((Arena arena) {
@@ -119,7 +119,7 @@ class HidDeviceDesktop extends HidDevice {
   @override
   Future<void> close() async {
     if (!isOpen) {
-      return;
+      throw StateError('Device is not open.');
     }
 
     _hidapi.hid_close(_device);
@@ -136,9 +136,9 @@ class HidDeviceDesktop extends HidDevice {
   }
 
   @override
-  Future<Uint8List> read(int amountToRead, {Duration? timeout}) {
+  Future<Uint8List> receiveReport(int amountToRead, {Duration? timeout}) {
     if (!isOpen) {
-      throw HidDeviceNotOpenException();
+      throw StateError('Device is not open.');
     }
 
     return using((Arena arena) async {
@@ -165,12 +165,12 @@ class HidDeviceDesktop extends HidDevice {
 
       if (result == 0) {
         if (timeout != null) {
-          throw HidReadTimeoutException('Read timed out.');
+          throw TimeoutException('Read timed out.');
         } else {
           return Uint8List(0);
         }
       } else if (result == -1) {
-        throw HidReadException('Failed to read $amountToRead bytes. '
+        throw HidException('Failed to read $amountToRead bytes. '
             'Error: $_getLastErrorMessage()');
       } else {
         return Uint8List.fromList(buffer.asTypedList(result));
@@ -179,9 +179,9 @@ class HidDeviceDesktop extends HidDevice {
   }
 
   @override
-  Future<int> write(Uint8List data, {int reportId = 0x00}) async {
+  Future<int> sendReport(Uint8List data, {int reportId = 0x00}) async {
     if (!isOpen) {
-      throw HidDeviceNotOpenException();
+      throw StateError('Device is not open.');
     }
 
     int bufferLength = data.length + 1;
@@ -194,7 +194,7 @@ class HidDeviceDesktop extends HidDevice {
           _hidapi.hid_write(_device, buffer.cast<UnsignedChar>(), bufferLength);
 
       if (result == -1) {
-        throw HidWriteException('Failed to write $bufferLength bytes. '
+        throw HidException('Failed to write $bufferLength bytes. '
             'Error: $_getLastErrorMessage()');
       } else {
         return result;
@@ -213,7 +213,7 @@ class HidDeviceDesktop extends HidDevice {
           _device, buffer.cast<UnsignedChar>(), bufferLength);
 
       if (result == -1) {
-        throw HidReadException('Failed to read feature report. '
+        throw HidException('Failed to read feature report. '
             'Error: $_getLastErrorMessage()');
       } else if (result == 0) {
         return Uint8List(0);
@@ -224,21 +224,21 @@ class HidDeviceDesktop extends HidDevice {
   }
 
   @override
-  Future<int> sendFeatureReport(Uint8List data, {int reportId = 0x00}) async {
+  Future<void> sendFeatureReport(Uint8List data, {int reportId = 0x00}) async {
     if (!isOpen) {
-      throw HidDeviceNotOpenException();
+      throw StateError('Device is not open.');
     }
 
     int bufferLength = data.length + 1;
 
-    return using((Arena arena) {
+    using((Arena arena) {
       var buffer = arena<Uint8>(bufferLength);
       buffer[0] = reportId;
       buffer.asTypedList(bufferLength).setAll(1, data);
       int result = _hidapi.hid_send_feature_report(
           _device, buffer.cast<UnsignedChar>(), bufferLength);
       if (result == -1) {
-        throw HidWriteException(
+        throw HidException(
             'Failed to send feature report of $bufferLength bytes. '
             'Error: $_getLastErrorMessage()');
       } else {
@@ -250,7 +250,7 @@ class HidDeviceDesktop extends HidDevice {
   @override
   Future<String> getIndexedString(int index, {int maxLength = 256}) async {
     if (!isOpen) {
-      throw HidDeviceNotOpenException();
+      throw StateError('Device is not open.');
     }
 
     return using((Arena arena) {

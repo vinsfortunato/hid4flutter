@@ -1,5 +1,25 @@
 import 'dart:typed_data';
+import 'hid_exception.dart';
 
+/// Represents an HID device. Provides properties for accessing information
+/// about the device, functions for opening and closing the connection, and
+/// the sending and receiving of reports.
+///
+/// Example usage:
+/// ```dart
+/// final HidDevice device = ...
+///
+/// await device.open();
+///
+/// // Send an Output report of 32 bytes (all zeroes).
+/// // The reportId is optional (default is 0x00).
+/// // It will be prefixed to the data as per HID rules.
+/// Uint8List data = Uint8List(32);
+/// await device.sendReport(reportId: 0x00, reportData);
+///
+/// // Close when no more needed
+/// await device.close();
+/// ```
 abstract class HidDevice {
   /// Get the HidDevice unique id.
   String get id;
@@ -41,6 +61,9 @@ abstract class HidDevice {
   /// Open a HID device.
   ///
   /// Must be closed by calling [close] when no more needed.
+  ///
+  /// Throws an [StateError] if the device is already open.
+  /// Throws an [HidException] if the attempt to open the device fails.
   Future<void> open();
 
   /// Check if the HID device is open.
@@ -49,32 +72,47 @@ abstract class HidDevice {
   /// Close the HID device.
   ///
   /// Must be called when an open device is no more needed.
+  ///
+  /// Throws an [StateError] if the device is not open.
+  /// Throws an [HidException] if the attempt to close the device fails.
   Future<void> close();
 
-  /// Read an Input report from a HID device.
+  /// Receive an Input report from the HID device.
   ///
   /// An optional [timeout] can be passed for setting
   /// the duration to wait before giving up.
-  Future<Uint8List> read(int amountToRead, {Duration? timeout});
+  ///
+  /// Throws an [StateError] if the device is not open.
+  /// Throws an [TimeoutException] if the attempt to receive the report time out.
+  /// Throws an [HidException] if the attempt to receive the report fails.
+  Future<Uint8List> receiveReport(int amountToRead, {Duration? timeout});
 
-  /// Write an Output report to a HID device.
+  /// Send an Output report to the HID device.
   ///
   /// The [reportId] will be prefixed to the HID packet as per HID rules.
   ///
-  /// Returns the actual number of bytes written.
-  Future<int> write(Uint8List data, {int reportId = 0x00});
+  /// Throws an [StateError] if the device is not open.
+  /// Throws an [HidException] if the attempt to send the report fails.
+  Future<void> sendReport(Uint8List data, {int reportId = 0x00});
 
-  /// Get a feature report from a HID device.
+  /// Get a feature report from the HID device.
+  ///
+  /// Throws an [StateError] if the device is not open.
+  /// Throws an [HidException] if the attempt to get the report fails.
   Future<Uint8List> getFeatureReport(int reportId, {int bufferLength = 1024});
 
-  /// Send a Feature report to the device.
+  /// Send a Feature report to the HID device.
   ///
   /// The [reportId] will be prefixed to the HID packet as per HID rules.
   ///
-  /// Returns the actual number of bytes written.
-  Future<int> sendFeatureReport(Uint8List data, {int reportId = 0x00});
+  /// Throws an [StateError] if the device is not open.
+  /// Throws an [HidException] if the attempt to send the report fails.
+  Future<void> sendFeatureReport(Uint8List data, {int reportId = 0x00});
 
   /// Get a string from an HID device, based on its string index.
+  ///
+  /// Throws an [StateError] if the device is not open.
+  /// Throws an [HidException] if the attempt to get the string fails.
   Future<String> getIndexedString(int index, {int maxLength = 256});
 
   @override
