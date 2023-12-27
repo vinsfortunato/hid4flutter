@@ -1,7 +1,8 @@
 ## 0.1.1
 
-### Changed
+### Fixed
 
+- Fix macOS podspec summary and description.
 - Fix test to clear pub publish warnings.
 
 ## 0.1.0

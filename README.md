@@ -7,7 +7,7 @@
 
 ## Disclaimer
 
-**Warning:** This plugin is currently under development, and the API is subject to change. Use it at your own risk in a production environment.
+**Warning:** This plugin is currently under development, and the API may be subject to change. Use it at your own risk in a production environment.
 
 Some features are planned but their development has been postponed. Check the list [here](#planned-features).
 
