@@ -7,6 +7,21 @@ cmake_minimum_required(VERSION 3.10)
 set(PROJECT_NAME "hid4flutter")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
+# Set hidapi configuration
+set(HIDAPI_VERSION "0.14.0" CACHE STRING "hidapi version")
+
+# Download hidapi sources
+include(../windows/DownloadProject.cmake)
+download_project(
+  PROJ
+  hidapi
+  URL
+  "https://github.com/libusb/hidapi/archive/refs/tags/hidapi-${HIDAPI_VERSION}.zip"
+  )
+
+# Add downloaded hidapi subdirectory
+add_subdirectory(${hidapi_SOURCE_DIR} ${hidapi_BINARY_DIR})
+
 # This value is used when generating builds using this plugin, so it must
 # not be changed.
 set(PLUGIN_NAME "hid4flutter_plugin")
@@ -40,12 +55,13 @@ target_include_directories(${PLUGIN_NAME} INTERFACE
   "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_link_libraries(${PLUGIN_NAME} PRIVATE flutter)
 target_link_libraries(${PLUGIN_NAME} PRIVATE PkgConfig::GTK)
+target_link_libraries(${PLUGIN_NAME} PRIVATE hidapi::hidapi)
 
 # List of absolute paths to libraries that should be bundled with the plugin.
 # This list could contain prebuilt libraries, or libraries created by an
 # external build triggered from this build file.
 set(hid4flutter_bundled_libraries
-  ""
+  "$<TARGET_FILE:hidapi::hidapi>"
   PARENT_SCOPE
 )
 
