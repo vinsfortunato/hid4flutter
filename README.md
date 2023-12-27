@@ -15,6 +15,7 @@ Contributions are welcome! Feel free to submit issues and pull requests to help 
 
 - Windows
 - macOS
+- Linux
 
 **Note:** As of now, `hid4flutter` is only supported on Windows and macOS. Support for other platforms will be added in future releases. 
 
@@ -113,7 +114,6 @@ print('Received report with id $reportId: $data.');
 // Close when no more needed
 await device.close();
 ```
-
 
 ## License
 
