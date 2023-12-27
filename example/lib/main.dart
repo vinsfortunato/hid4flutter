@@ -83,6 +83,7 @@ class DeviceListScreenState extends State<DeviceListScreen> {
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Text('Path: ${device.path}'),
                 Text('Vendor ID: ${device.vendorId}'),
                 Text('Product ID: ${device.productId}'),
                 Text('Usage Page: ${device.usagePage}'),
