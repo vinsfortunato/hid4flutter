@@ -17,7 +17,7 @@ Contributions are welcome! Feel free to submit issues and pull requests to help 
 
 - Windows
 - macOS
-- Linux
+- Linux (currently requires to install libhidapi-hidraw0 manually, see [installation](#installation))
 
 **Note:** Some platforms [will be supported](#planned-platform-support) in future releases.
 
@@ -58,6 +58,16 @@ To install `hid4flutter` in a Flutter project, follow these steps:
     ```
 
 4. Follow the documentation and examples to integrate and communicate with HID devices in your Flutter application.
+
+
+**Note:** On Linux platform it is currently required to install `hidapi` manually by executing the following command
+
+```bash
+sudo apt-get install libhidapi-hidraw0
+```
+
+Currently `hidapi` doesn't get compiled on Linux when building this library. It will be in future releases when this
+issue will be addressed.
 
 ## Usage
 
