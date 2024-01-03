@@ -1,3 +1,0 @@
-[submodule "windows/hidapi"]
-	path = windows/hidapi
-	url = https://github.com/libusb/hidapi
