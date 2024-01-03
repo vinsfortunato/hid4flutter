@@ -12,20 +12,8 @@ project(${PROJECT_NAME} LANGUAGES CXX)
 # versions of CMake.
 cmake_policy(VERSION 3.14...3.25)
 
-# Set hidapi configuration
-set(HIDAPI_VERSION "0.14.0" CACHE STRING "hidapi version")
-
-# Download hidapi sources
-include(../windows/DownloadProject.cmake)
-download_project(
-  PROJ
-  hidapi
-  URL
-  "https://github.com/libusb/hidapi/archive/refs/tags/hidapi-${HIDAPI_VERSION}.zip"
-  )
-
-# Add downloaded hidapi subdirectory
-add_subdirectory(${hidapi_SOURCE_DIR} ${hidapi_BINARY_DIR})
+# Add hidapi subdirectory
+add_subdirectory(hidapi)
 
 # This value is used when generating builds using this plugin, so it must
 # not be changed
