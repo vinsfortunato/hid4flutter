@@ -86,7 +86,7 @@ class HidDeviceDesktop extends HidDevice {
       throw StateError('Device is already open.');
     }
 
-    using((Arena arena) {
+    using((arena) {
       _device = _hidapi.hid_open_path(path.toCharPointer(allocator: arena));
 
       if (_device == nullptr) {
@@ -193,7 +193,7 @@ class HidDeviceDesktop extends HidDevice {
 
     int bufferSize = data.length + 1;
 
-    using((Arena arena) {
+    using((arena) {
       var buffer = arena<Uint8>(bufferSize);
       buffer[0] = reportId;
       buffer.asTypedList(bufferSize).setAll(1, data);
@@ -211,7 +211,7 @@ class HidDeviceDesktop extends HidDevice {
   @override
   Future<Uint8List> receiveFeatureReport(int reportId,
       {int bufferSize = 1024}) async {
-    return using((Arena arena) {
+    return using((arena) {
       var buffer = arena<Uint8>(bufferSize);
       buffer[0] = reportId;
       buffer.asTypedList(bufferSize).fillRange(1, bufferSize, 0);
@@ -237,7 +237,7 @@ class HidDeviceDesktop extends HidDevice {
 
     int bufferSize = data.length + 1;
 
-    using((Arena arena) {
+    using((arena) {
       var buffer = arena<Uint8>(bufferSize);
       buffer[0] = reportId;
       buffer.asTypedList(bufferSize).setAll(1, data);
@@ -258,7 +258,7 @@ class HidDeviceDesktop extends HidDevice {
       throw StateError('Device is not open.');
     }
 
-    return using((Arena arena) {
+    return using((arena) {
       var buffer = arena<WChar>(maxLength);
       int result =
           _hidapi.hid_get_indexed_string(_device, index, buffer, maxLength);
