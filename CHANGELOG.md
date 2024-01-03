@@ -1,3 +1,14 @@
+## 0.1.2
+
+### Fixed
+
+- Remove CMake warning when building on Windows.
+
+### Changed
+
+- Use git submodule to download hidapi sources on Windows.
+- Improve code quality.
+
 ## 0.1.1
 
 ### Fixed

@@ -1,6 +1,6 @@
 # hid4flutter
 
-[![pub](https://img.shields.io/badge/pub-0.1.1-blue)](https://pub.dev/packages/hid4flutter)
+[![pub](https://img.shields.io/badge/pub-0.1.2-blue)](https://pub.dev/packages/hid4flutter)
 [![license: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 
 `hid4flutter` is a Flutter plugin that enables communication with HID (Human Interface Device) devices from a Flutter application.
@@ -40,10 +40,10 @@ To install `hid4flutter` in a Flutter project, follow these steps:
 
     ```yaml
     dependencies:
-      hid4flutter: ^0.1.1
+      hid4flutter: ^0.1.2
     ```
 
-    Replace `^0.1.1` with the latest version of the plugin.
+    Replace `^0.1.2` with the latest version of the plugin.
 
 2. Run the following command to install the dependency:
 
@@ -134,12 +134,12 @@ try {
 These features are planned to be developed but currently not supported:
 
 - **Get device HID report descriptor**: request the report descriptor from the device
-  and return it as a structured objects represeting the HID collections.
+  and return it as a structured objects representing the HID collections.
   Using hidapi version >= 0.14.0 gives the ability to easily get
   the report descriptor bytes. A parser is required however to get a
   structured object.
 - **Notify about device connection/disconnection events**: add the possibility to
-  listen connection/disconnection events to avoid polling getDevices(...) function.
+  listen connection/disconnection events and avoid polling getDevices(...) function.
 
 ## License
 
