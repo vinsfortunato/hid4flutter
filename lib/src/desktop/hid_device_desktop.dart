@@ -91,13 +91,13 @@ class HidDeviceDesktop extends HidDevice {
 
       if (_device == nullptr) {
         throw HidException('Failed to open hid device. '
-            'Error: $_getLastErrorMessage()');
+            'Error: ${_getLastErrorMessage()}');
       }
 
       // Enable non blocking mode
       if (_hidapi.hid_set_nonblocking(_device, 1) == -1) {
         throw HidException('Failed to set non blocking mode. '
-            'Error: $_getLastErrorMessage()');
+            'Error: ${_getLastErrorMessage()}');
       }
 
       // Notify listeners
@@ -156,7 +156,7 @@ class HidDeviceDesktop extends HidDevice {
 
         if (result == -1) {
           throw HidException('Failed to receive input report. '
-              'Error: $_getLastErrorMessage()');
+              'Error: ${_getLastErrorMessage()}');
         } else if (result > 0) {
           for (var i = 0; i < result; i++) {
             yield buffer[i];
@@ -202,7 +202,7 @@ class HidDeviceDesktop extends HidDevice {
 
       if (result == -1) {
         throw HidException('Failed to write $bufferSize bytes. '
-            'Error: $_getLastErrorMessage()');
+            'Error: ${_getLastErrorMessage()}');
       }
       //TODO what to do if result != buffer.length ?
     });
@@ -220,7 +220,7 @@ class HidDeviceDesktop extends HidDevice {
 
       if (result == -1) {
         throw HidException('Failed to read feature report. '
-            'Error: $_getLastErrorMessage()');
+            'Error: ${_getLastErrorMessage()}');
       } else if (result == 0) {
         return Uint8List(0);
       } else {
@@ -246,7 +246,7 @@ class HidDeviceDesktop extends HidDevice {
       if (result == -1) {
         throw HidException(
             'Failed to send feature report of $bufferSize bytes. '
-            'Error: $_getLastErrorMessage()');
+            'Error: ${_getLastErrorMessage()}');
       }
       //TODO what to do if result != buffer.length ?
     });
@@ -267,7 +267,7 @@ class HidDeviceDesktop extends HidDevice {
         return buffer.toDartString();
       } else {
         throw HidException('Failed to get indexed string with $index index. '
-            'Error: $_getLastErrorMessage()');
+            'Error: ${_getLastErrorMessage()}');
       }
     });
   }
