@@ -21,6 +21,11 @@ class Hid {
     int? usagePage,
     int? usage,
   }) {
-    return HidPlatform.instance.getDevices();
+    return HidPlatform.instance.getDevices(
+      vendorId: vendorId,
+      productId: productId,
+      usagePage: usagePage,
+      usage: usage,
+    );
   }
 }
