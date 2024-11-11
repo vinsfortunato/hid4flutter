@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ffi';
 
 import 'package:hid4flutter/src/hid_device.dart';
@@ -84,6 +85,47 @@ class _HidDesktop extends HidPlatform {
     _exitIfPossible();
 
     return devices;
+  }
+
+  @override
+  Stream<List<HidDevice>> watchDevices({
+    int? vendorId,
+    int? productId,
+    int? usagePage,
+    int? usage,
+    required Duration pollingInterval,
+  }) async* {
+    StreamController<List<HidDevice>> controller = StreamController();
+
+    List<HidDevice> devices = await getDevices(
+      vendorId: vendorId,
+      productId: productId,
+      usagePage: usagePage,
+      usage: usage,
+    );
+
+    // Emit initial list of devices
+    yield devices;
+
+    // Poll for new devices
+
+    while (controller.hasListener) {
+      Future.delayed(pollingInterval);
+
+      final newDevices = await getDevices(
+        vendorId: vendorId,
+        productId: productId,
+        usagePage: usagePage,
+        usage: usage,
+      );
+
+      if (newDevices.length != devices.length || newDevices != devices) {
+        devices = newDevices;
+        yield devices;
+      }
+    }
+
+    controller.close();
   }
 
   void _onDeviceOpen(HidDevice device) {

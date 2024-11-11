@@ -13,6 +13,17 @@ class MockHidPlatform with MockPlatformInterfaceMixin implements HidPlatform {
   }) async {
     return List.empty();
   }
+
+  @override
+  Stream<List<HidDevice>> watchDevices({
+    int? vendorId,
+    int? productId,
+    int? usagePage,
+    int? usage,
+    required Duration pollingInterval
+  }) {
+    return const Stream.empty();
+  }
 }
 
 void main() async {

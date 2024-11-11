@@ -28,4 +28,12 @@ abstract class HidPlatform extends PlatformInterface {
     int? usagePage,
     int? usage,
   });
+
+  Stream<List<HidDevice>> watchDevices({
+    int? vendorId,
+    int? productId,
+    int? usagePage,
+    int? usage,
+    required Duration pollingInterval,
+  });
 }

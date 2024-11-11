@@ -27,24 +27,9 @@ class DeviceListScreen extends StatefulWidget {
 }
 
 class DeviceListScreenState extends State<DeviceListScreen> {
-  List<HidDevice> devices = [];
-
   @override
   void initState() {
     super.initState();
-    _loadConnectedDevices();
-  }
-
-  Future<void> _loadConnectedDevices() async {
-    try {
-      List<HidDevice> connectedDevices = await Hid.getDevices();
-      setState(() {
-        devices = connectedDevices;
-      });
-    } catch (e) {
-      // ignore: avoid_print
-      print('Error getting connected devices: $e');
-    }
   }
 
   @override
@@ -54,24 +39,28 @@ class DeviceListScreenState extends State<DeviceListScreen> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Connected Devices'),
       ),
-      body: _buildDeviceList(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => {
-          _loadConnectedDevices(),
+      body: StreamBuilder(
+        stream: Hid.watchDevices(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(
+              child: Text('No connected devices'),
+            );
+          }
+          return DeviceListView(snapshot.data!);
         },
-        tooltip: 'Refresh',
-        child: const Icon(Icons.refresh),
       ),
     );
   }
+}
 
-  Widget _buildDeviceList() {
-    if (devices.isEmpty) {
-      return const Center(
-        child: Text('No connected devices'),
-      );
-    }
+class DeviceListView extends StatelessWidget {
+  final List<HidDevice> devices;
 
+  const DeviceListView(this.devices, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: devices.length,
       itemBuilder: (context, index) {

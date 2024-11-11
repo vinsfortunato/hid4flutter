@@ -16,4 +16,16 @@ class HidAndroid extends HidPlatform {
     // TODO: implement getDevices
     throw UnimplementedError();
   }
+
+  @override
+  Stream<List<HidDevice>> watchDevices({
+    int? vendorId,
+    int? productId,
+    int? usagePage,
+    int? usage,
+    required Duration pollingInterval,
+  }) {
+    // TODO: implement watchDevices
+    throw UnimplementedError();
+  }
 }
