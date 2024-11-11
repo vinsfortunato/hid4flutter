@@ -13,7 +13,7 @@ project(${PROJECT_NAME} LANGUAGES CXX)
 cmake_policy(VERSION 3.14...3.25)
 
 # Add hidapi subdirectory
-add_subdirectory(hidapi)
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../third_party/hidapi")
 
 # This value is used when generating builds using this plugin, so it must
 # not be changed
