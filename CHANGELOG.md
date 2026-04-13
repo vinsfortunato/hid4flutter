@@ -1,3 +1,16 @@
+## 0.2.0
+
+### Added
+
+- Support for Android platform using Android USB API and MethodChannel (thanks to [Henrik Kubitza](https://github.com/Qubitza))
+
+## 0.1.3
+
+### Fixed
+
+- Hid.getDevices(...) parameters now work as expected.
+- Evaluate _getLastErrorMessage() when throwing HidException.
+
 ## 0.1.2
 
 ### Fixed
