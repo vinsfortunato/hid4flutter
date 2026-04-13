@@ -1,6 +1,6 @@
 # hid4flutter
 
-[![pub](https://img.shields.io/badge/pub-0.1.2-blue)](https://pub.dev/packages/hid4flutter)
+[![pub](https://img.shields.io/badge/pub-0.2.0-blue)](https://pub.dev/packages/hid4flutter)
 [![license: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 
 `hid4flutter` is a Flutter plugin that enables communication with HID (Human Interface Device) devices from a Flutter application.
@@ -15,6 +15,7 @@ Contributions are welcome! Feel free to submit issues and pull requests to help 
 
 ## Supported Platforms
 
+- Android (thanks to [Henrik Kubitza](https://github.com/Qubitza))
 - Windows
 - macOS
 - Linux (currently requires to install libhidapi-hidraw0 manually, see [installation](#installation))
@@ -23,13 +24,12 @@ Contributions are welcome! Feel free to submit issues and pull requests to help 
 
 ### Implementation details
 
-Desktop support (Windows/macOS/Linux) is achieved by using [hidapi](https://github.com/libusb/hidapi) and Dart FFI.
+- Desktop support (Windows/macOS/Linux) is achieved by using [hidapi](https://github.com/libusb/hidapi) and Dart FFI.
 
 ### Planned platform support
 
 Support for the following platforms is planned to be added in the near future:
 
-- **Android**: can be easily supported using MethodChannel and Android HID.
 - **Web**: experimental WebHID can be used to support the Web platform.
 
 ## Installation
@@ -40,10 +40,10 @@ To install `hid4flutter` in a Flutter project, follow these steps:
 
     ```yaml
     dependencies:
-      hid4flutter: ^0.1.2
+      hid4flutter: ^0.2.0
     ```
 
-    Replace `^0.1.2` with the latest version of the plugin.
+    Replace `^0.2.0` with the latest version of the plugin.
 
 2. Run the following command to install the dependency:
 
@@ -144,3 +144,8 @@ These features are planned to be developed but currently not supported:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgements
+
+- [Henrik Kubitza](https://github.com/Qubitza) for his contribution in implementing Android support.
+- The developers of [hidapi](https://github.com/libusb/hidapi) for their work on the HID API library.
