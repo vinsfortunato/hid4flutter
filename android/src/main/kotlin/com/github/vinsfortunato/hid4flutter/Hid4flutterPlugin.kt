@@ -17,7 +17,11 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import android.os.Handler
+import android.os.Looper
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeoutException
 import java.util.concurrent.TimeUnit
 
@@ -33,6 +37,8 @@ class Hid4flutterPlugin : FlutterPlugin, MethodCallHandler {
 
     private lateinit var channel: MethodChannel
     private lateinit var applicationContext: Context
+    private val ioExecutor = Executors.newCachedThreadPool()
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     private val ACTION_USB_PERMISSION by lazy { "${applicationContext.packageName}.USB_PERMISSION" }
 
@@ -41,7 +47,7 @@ class Hid4flutterPlugin : FlutterPlugin, MethodCallHandler {
         val intf: UsbInterface
     )
 
-    private val openHandles = HashMap<String, OpenHandle>()
+    private val openHandles = ConcurrentHashMap<String, OpenHandle>()
 
     private fun keyFor(path: String, interfaceNumber: Int): String =
         "$" + path + "#" + interfaceNumber
@@ -57,8 +63,14 @@ class Hid4flutterPlugin : FlutterPlugin, MethodCallHandler {
             "getDevices" -> {
                 val vendorId = call.argument<Int>("vendorId")
                 val productId = call.argument<Int>("productId")
-                val devices = listHidDevices(vendorId, productId)
-                result.success(devices)
+                ioExecutor.execute {
+                    try {
+                        val devices = listHidDevices(vendorId, productId)
+                        mainHandler.post { result.success(devices) }
+                    } catch (e: Exception) {
+                        mainHandler.post { result.error("GET_DEVICES_FAILED", e.message ?: "Failed to list HID devices", null) }
+                    }
+                }
             }
 
             "openDevice" -> {
@@ -68,13 +80,15 @@ class Hid4flutterPlugin : FlutterPlugin, MethodCallHandler {
                     result.error("ARGUMENT_ERROR", "Missing 'path' or 'interfaceNumber'", null)
                     return
                 }
-                try {
-                    openHidDevice(path, interfaceNumber)
-                    result.success(null)
-                } catch (se: SecurityException) {
-                    result.error("PERMISSION_DENIED", se.message ?: "USB permission denied", null)
-                } catch (e: Exception) {
-                    result.error("OPEN_FAILED", e.message ?: "Failed to open HID device", null)
+                ioExecutor.execute {
+                    try {
+                        openHidDevice(path, interfaceNumber)
+                        mainHandler.post { result.success(null) }
+                    } catch (se: SecurityException) {
+                        mainHandler.post { result.error("PERMISSION_DENIED", se.message ?: "USB permission denied", null) }
+                    } catch (e: Exception) {
+                        mainHandler.post { result.error("OPEN_FAILED", e.message ?: "Failed to open HID device", null) }
+                    }
                 }
             }
 
@@ -85,11 +99,13 @@ class Hid4flutterPlugin : FlutterPlugin, MethodCallHandler {
                     result.error("ARGUMENT_ERROR", "Missing 'path' or 'interfaceNumber'", null)
                     return
                 }
-                try {
-                    closeHidDevice(path, interfaceNumber)
-                    result.success(null)
-                } catch (e: Exception) {
-                    result.error("CLOSE_FAILED", e.message ?: "Failed to close HID device", null)
+                ioExecutor.execute {
+                    try {
+                        closeHidDevice(path, interfaceNumber)
+                        mainHandler.post { result.success(null) }
+                    } catch (e: Exception) {
+                        mainHandler.post { result.error("CLOSE_FAILED", e.message ?: "Failed to close HID device", null) }
+                    }
                 }
             }
 
@@ -97,25 +113,24 @@ class Hid4flutterPlugin : FlutterPlugin, MethodCallHandler {
                 val path = call.argument<String>("path")
                 val interfaceNumber = call.argument<Int>("interfaceNumber")
                 val reportId = call.argument<Int>("reportId") ?: 0
+                val raw: ByteArray? = call.argument<ByteArray>("data")
                 if (path == null || interfaceNumber == null) {
                     result.error("ARGUMENT_ERROR", "Missing 'path' or 'interfaceNumber'", null)
                     return
                 }
-                try {
-                    val raw: ByteArray? = call.argument<ByteArray>("data")
-                    val payload: ByteArray = raw ?: ByteArray(0)
-
-                    // Build buffer: first byte is reportId, followed by data bytes
-                    val buffer = ByteArray(1 + payload.size)
-                    buffer[0] = reportId.toByte()
-                    System.arraycopy(payload, 0, buffer, 1, payload.size)
-
-                    sendOutputReport(path, interfaceNumber, buffer)
-                    result.success(null)
-                } catch (e: IllegalStateException) {
-                    result.error("NOT_OPEN", e.message ?: "Device/interface is not open", null)
-                } catch (e: Exception) {
-                    result.error("SEND_FAILED", e.message ?: "Failed to send HID report", null)
+                ioExecutor.execute {
+                    try {
+                        val payload: ByteArray = raw ?: ByteArray(0)
+                        val buffer = ByteArray(1 + payload.size)
+                        buffer[0] = reportId.toByte()
+                        System.arraycopy(payload, 0, buffer, 1, payload.size)
+                        sendOutputReport(path, interfaceNumber, buffer)
+                        mainHandler.post { result.success(null) }
+                    } catch (e: IllegalStateException) {
+                        mainHandler.post { result.error("NOT_OPEN", e.message ?: "Device/interface is not open", null) }
+                    } catch (e: Exception) {
+                        mainHandler.post { result.error("SEND_FAILED", e.message ?: "Failed to send HID report", null) }
+                    }
                 }
             }
 
@@ -132,14 +147,17 @@ class Hid4flutterPlugin : FlutterPlugin, MethodCallHandler {
                     )
                     return
                 }
-                try {
-                    result.success(readInputReport(path, interfaceNumber, reportLength, timeoutMs))
-                } catch (e: TimeoutException) {
-                    result.error("TIMEOUT", e.message ?: "Timed out waiting for input report", null)
-                } catch (e: IllegalStateException) {
-                    result.error("NOT_OPEN", e.message ?: "Device/interface is not open", null)
-                } catch (e: Exception) {
-                    result.error("RECEIVE_FAILED", e.message ?: "Failed to receive HID report", null)
+                ioExecutor.execute {
+                    try {
+                        val data = readInputReport(path, interfaceNumber, reportLength, timeoutMs)
+                        mainHandler.post { result.success(data) }
+                    } catch (e: TimeoutException) {
+                        mainHandler.post { result.error("TIMEOUT", e.message ?: "Timed out waiting for input report", null) }
+                    } catch (e: IllegalStateException) {
+                        mainHandler.post { result.error("NOT_OPEN", e.message ?: "Device/interface is not open", null) }
+                    } catch (e: Exception) {
+                        mainHandler.post { result.error("RECEIVE_FAILED", e.message ?: "Failed to receive HID report", null) }
+                    }
                 }
             }
 
@@ -152,16 +170,21 @@ class Hid4flutterPlugin : FlutterPlugin, MethodCallHandler {
                     result.error("ARGUMENT_ERROR", "Missing 'path' or 'interfaceNumber'", null)
                     return
                 }
-                try {
-                    result.success(readFeatureReport(path, interfaceNumber, reportId, bufferSize))
-                } catch (e: IllegalStateException) {
-                    result.error("NOT_OPEN", e.message ?: "Device/interface is not open", null)
-                } catch (e: Exception) {
-                    result.error(
-                        "RECEIVE_FEATURE_FAILED",
-                        e.message ?: "Failed to receive feature report",
-                        null
-                    )
+                ioExecutor.execute {
+                    try {
+                        val data = readFeatureReport(path, interfaceNumber, reportId, bufferSize)
+                        mainHandler.post { result.success(data) }
+                    } catch (e: IllegalStateException) {
+                        mainHandler.post { result.error("NOT_OPEN", e.message ?: "Device/interface is not open", null) }
+                    } catch (e: Exception) {
+                        mainHandler.post {
+                            result.error(
+                                "RECEIVE_FEATURE_FAILED",
+                                e.message ?: "Failed to receive feature report",
+                                null
+                            )
+                        }
+                    }
                 }
             }
 
@@ -169,27 +192,30 @@ class Hid4flutterPlugin : FlutterPlugin, MethodCallHandler {
                 val path = call.argument<String>("path")
                 val interfaceNumber = call.argument<Int>("interfaceNumber")
                 val reportId = call.argument<Int>("reportId") ?: 0
+                val raw: ByteArray? = call.argument<ByteArray>("data")
                 if (path == null || interfaceNumber == null) {
                     result.error("ARGUMENT_ERROR", "Missing 'path' or 'interfaceNumber'", null)
                     return
                 }
-                try {
-                    val raw: ByteArray? = call.argument<ByteArray>("data")
-                    val payload: ByteArray = raw ?: ByteArray(0)
-                    val buffer = ByteArray(1 + payload.size)
-                    buffer[0] = reportId.toByte()
-                    System.arraycopy(payload, 0, buffer, 1, payload.size)
-
-                    sendFeatureReport(path, interfaceNumber, reportId, buffer)
-                    result.success(null)
-                } catch (e: IllegalStateException) {
-                    result.error("NOT_OPEN", e.message ?: "Device/interface is not open", null)
-                } catch (e: Exception) {
-                    result.error(
-                        "SEND_FEATURE_FAILED",
-                        e.message ?: "Failed to send feature report",
-                        null
-                    )
+                ioExecutor.execute {
+                    try {
+                        val payload: ByteArray = raw ?: ByteArray(0)
+                        val buffer = ByteArray(1 + payload.size)
+                        buffer[0] = reportId.toByte()
+                        System.arraycopy(payload, 0, buffer, 1, payload.size)
+                        sendFeatureReport(path, interfaceNumber, reportId, buffer)
+                        mainHandler.post { result.success(null) }
+                    } catch (e: IllegalStateException) {
+                        mainHandler.post { result.error("NOT_OPEN", e.message ?: "Device/interface is not open", null) }
+                    } catch (e: Exception) {
+                        mainHandler.post {
+                            result.error(
+                                "SEND_FEATURE_FAILED",
+                                e.message ?: "Failed to send feature report",
+                                null
+                            )
+                        }
+                    }
                 }
             }
 
@@ -206,16 +232,21 @@ class Hid4flutterPlugin : FlutterPlugin, MethodCallHandler {
                     )
                     return
                 }
-                try {
-                    result.success(readIndexedString(path, interfaceNumber, index, maxLength))
-                } catch (e: IllegalStateException) {
-                    result.error("NOT_OPEN", e.message ?: "Device/interface is not open", null)
-                } catch (e: Exception) {
-                    result.error(
-                        "GET_STRING_FAILED",
-                        e.message ?: "Failed to read indexed string",
-                        null
-                    )
+                ioExecutor.execute {
+                    try {
+                        val s = readIndexedString(path, interfaceNumber, index, maxLength)
+                        mainHandler.post { result.success(s) }
+                    } catch (e: IllegalStateException) {
+                        mainHandler.post { result.error("NOT_OPEN", e.message ?: "Device/interface is not open", null) }
+                    } catch (e: Exception) {
+                        mainHandler.post {
+                            result.error(
+                                "GET_STRING_FAILED",
+                                e.message ?: "Failed to read indexed string",
+                                null
+                            )
+                        }
+                    }
                 }
             }
 
