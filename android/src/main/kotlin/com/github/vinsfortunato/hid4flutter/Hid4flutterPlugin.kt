@@ -711,8 +711,6 @@ class Hid4flutterPlugin : FlutterPlugin, MethodCallHandler, EventChannel.StreamH
         }
     }
 
-    // ---------- String descriptors ----------
-
     private suspend fun readIndexedString(
         path: String,
         interfaceNumber: Int,
