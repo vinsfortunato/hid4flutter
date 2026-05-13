@@ -40,7 +40,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
   @override
   void dispose() {
     _redrawTimer?.cancel();
-    _inputSub?.cancel();
+    _inputSub?.cancel(); // returns quickly now
     _inputScrollController.dispose();
     _reportIdController.dispose();
     _hexController.dispose();
@@ -92,21 +92,18 @@ class _DeviceScreenState extends State<DeviceScreen> {
         _inputBytes.add(byte);
         _scheduleRedraw();
       },
-      onError: (_) {
+      onError: (e) {
         _inputSub = null;
-        if (_shouldListen && widget.device.isOpen) {
-          _subscribeToStream();
-        } else {
+        _shouldListen = false;
+        if (mounted) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('$e')));
           setState(() {});
         }
       },
       onDone: () {
         _inputSub = null;
-        if (_shouldListen && widget.device.isOpen) {
-          _subscribeToStream();
-        } else {
-          setState(() {});
-        }
+        if (mounted) setState(() {});
       },
     );
   }
