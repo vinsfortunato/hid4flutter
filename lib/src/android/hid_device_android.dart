@@ -6,8 +6,7 @@ import 'package:hid4flutter/src/hid_exception.dart';
 import 'package:hid4flutter/src/android/hid_android.dart';
 
 class HidDeviceAndroid extends HidDevice {
-  static const Duration _inputPollTimeout = Duration(milliseconds: 250);
-  static const int _defaultInputChunkSize = 1024;
+  static const EventChannel _eventChannel = EventChannel('hid4flutter/events');
 
   HidDeviceAndroid({
     required this.id,
@@ -68,6 +67,11 @@ class HidDeviceAndroid extends HidDevice {
 
   bool _isOpen = false;
 
+  Map<String, Object> get _streamArgs => {
+        'path': path,
+        'interfaceNumber': interfaceNumber,
+      };
+
   @override
   Future<void> open() async {
     if (_isOpen) {
@@ -82,10 +86,8 @@ class HidDeviceAndroid extends HidDevice {
       });
       _isOpen = true;
     } on PlatformException catch (e) {
-      final message = e.message?.isNotEmpty == true
-          ? e.message!
-          : 'Failed to open HID device';
-      throw HidException('${e.code}: $message');
+      throw HidException(
+          '${e.code}: ${e.message ?? 'Failed to open HID device'}');
     }
   }
 
@@ -97,18 +99,18 @@ class HidDeviceAndroid extends HidDevice {
     if (!_isOpen) {
       throw StateError('Device is not open');
     }
+    // Flip the flag first so any concurrent stream consumer can see the device
+    // is no longer open and exit promptly without racing the platform call.
+    _isOpen = false;
     try {
       await HidAndroid.invokeMethod('closeDevice', {
         'id': id,
         'path': path,
         'interfaceNumber': interfaceNumber,
       });
-      _isOpen = false;
     } on PlatformException catch (e) {
-      final message = e.message?.isNotEmpty == true
-          ? e.message!
-          : 'Failed to close HID device';
-      throw HidException('${e.code}: $message');
+      throw HidException(
+          '${e.code}: ${e.message ?? 'Failed to close HID device'}');
     }
   }
 
@@ -117,28 +119,15 @@ class HidDeviceAndroid extends HidDevice {
     if (!_isOpen) {
       throw StateError('Device is not open');
     }
-
-    return (() async* {
-      while (_isOpen) {
-        try {
-          final report = await _readReportChunk(
-            _defaultInputChunkSize,
-            timeout: _inputPollTimeout,
-          );
-
-          for (final byte in report) {
-            yield byte;
-          }
-        } on TimeoutException {
-          continue;
-        } on HidException {
-          if (!_isOpen) {
-            break;
-          }
-          rethrow;
-        }
+    return _eventChannel
+        .receiveBroadcastStream(_streamArgs)
+        .map<int>((event) => (event as int) & 0xFF)
+        .handleError((Object error) {
+      if (error is PlatformException) {
+        throw HidException('${error.code}: ${error.message ?? 'Stream error'}');
       }
-    })();
+      throw error;
+    });
   }
 
   @override
@@ -147,12 +136,41 @@ class HidDeviceAndroid extends HidDevice {
       throw StateError('Device is not open');
     }
 
-    var result = inputStream().take(reportLength).toList();
-    if (timeout != null) {
-      result = result.timeout(timeout);
-    }
+    final completer = Completer<Uint8List>();
+    final buffer = <int>[];
+    late StreamSubscription<int> sub;
 
-    return Uint8List.fromList(await result);
+    sub = inputStream().listen(
+      (byte) {
+        buffer.add(byte);
+        if (buffer.length >= reportLength) {
+          if (!completer.isCompleted) {
+            completer.complete(
+                Uint8List.fromList(buffer.take(reportLength).toList()));
+          }
+          sub.cancel();
+        }
+      },
+      onError: (Object e, StackTrace st) {
+        if (!completer.isCompleted) completer.completeError(e, st);
+        sub.cancel();
+      },
+      onDone: () {
+        if (!completer.isCompleted) {
+          completer.completeError(
+              HidException('Stream closed before report received'));
+        }
+      },
+      cancelOnError: true,
+    );
+
+    if (timeout != null) {
+      return completer.future.timeout(timeout, onTimeout: () {
+        sub.cancel();
+        throw TimeoutException('Timed out waiting for input report', timeout);
+      });
+    }
+    return completer.future;
   }
 
   @override
@@ -169,10 +187,8 @@ class HidDeviceAndroid extends HidDevice {
         'data': data,
       });
     } on PlatformException catch (e) {
-      final message = e.message?.isNotEmpty == true
-          ? e.message!
-          : 'Failed to send HID report';
-      throw HidException('${e.code}: $message');
+      throw HidException(
+          '${e.code}: ${e.message ?? 'Failed to send HID report'}');
     }
   }
 
@@ -193,10 +209,8 @@ class HidDeviceAndroid extends HidDevice {
           }) ??
           Uint8List(0);
     } on PlatformException catch (e) {
-      final message = e.message?.isNotEmpty == true
-          ? e.message!
-          : 'Failed to receive feature report';
-      throw HidException('${e.code}: $message');
+      throw HidException(
+          '${e.code}: ${e.message ?? 'Failed to receive feature report'}');
     }
   }
 
@@ -215,10 +229,8 @@ class HidDeviceAndroid extends HidDevice {
         'data': data,
       });
     } on PlatformException catch (e) {
-      final message = e.message?.isNotEmpty == true
-          ? e.message!
-          : 'Failed to send feature report';
-      throw HidException('${e.code}: $message');
+      throw HidException(
+          '${e.code}: ${e.message ?? 'Failed to send feature report'}');
     }
   }
 
@@ -238,42 +250,8 @@ class HidDeviceAndroid extends HidDevice {
           }) ??
           '';
     } on PlatformException catch (e) {
-      final message = e.message?.isNotEmpty == true
-          ? e.message!
-          : 'Failed to get indexed string';
-      throw HidException('${e.code}: $message');
-    }
-  }
-
-  Future<Uint8List> _readReportChunk(
-    int reportLength, {
-    Duration? timeout,
-  }) async {
-    if (!_isOpen) {
-      throw StateError('Device is not open');
-    }
-
-    try {
-      return await HidAndroid.invokeMethod<Uint8List>('receiveReport', {
-            'id': id,
-            'path': path,
-            'interfaceNumber': interfaceNumber,
-            'reportLength': reportLength,
-            'timeoutMs': timeout?.inMilliseconds,
-          }) ??
-          Uint8List(0);
-    } on PlatformException catch (e) {
-      if (e.code == 'TIMEOUT') {
-        throw TimeoutException(
-          e.message ?? 'Timed out waiting for input report',
-          timeout,
-        );
-      }
-
-      final message = e.message?.isNotEmpty == true
-          ? e.message!
-          : 'Failed to receive HID report';
-      throw HidException('${e.code}: $message');
+      throw HidException(
+          '${e.code}: ${e.message ?? 'Failed to get indexed string'}');
     }
   }
 }
